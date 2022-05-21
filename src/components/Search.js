@@ -1,45 +1,32 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import wikipedia from "../api/wikipedia";
 
 const Search = () => {
-  const [term, setTerm] = useState("");
+  const [term, setTerm] = useState("computer");
   const [results, setResults] = useState([]);
-
-  console.log("RUN AT EVERY RENDER");
 
   //[term]
   //initial phase and whenever my components re-renders and whenver i cahnge some data(state)
   useEffect(() => {
-    // (async () => {
-    //   const response = await axios.get("https://en.wikipedia.org/w/api.php", {
-    //     params: {
-    //       action: "query",
-    //       list: "search",
-    //       format: "json",
-    //       srsearch: "birds",
-    //       origin: "*",
-    //     },
-    //   });
-    //   console.log(response);
-    // })();
-
     const search = async () => {
-      const response = await axios.get("https://en.wikipedia.org/w/api.php", {
+      const response = await wikipedia.get("/w/api.php", {
         params: {
-          action: "query",
-          list: "search",
-          format: "json",
           srsearch: term,
-          origin: "*",
         },
       });
       setResults(response.data.query.search);
     };
-    if (term) {
-      search();
-    }
+    const clearID = setTimeout(() => {
+      if (term) {
+        search();
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(clearID);
+    };
   }, [term]);
-  console.log(results);
 
   const renderResults = results.map((result) => {
     return (
